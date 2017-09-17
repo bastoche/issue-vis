@@ -26,6 +26,8 @@ class App extends Component {
     ];
     return (
       <div className="App">
+        <h1>issue-vis</h1>
+        <h2>New issues</h2>
         <XYPlot height={300} width={300}>
           <VerticalGridLines />
           <HorizontalGridLines />
