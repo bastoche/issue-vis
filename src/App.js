@@ -21,19 +21,30 @@ import {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { issuesByCreationDay: null };
+    this.state = { issues: null };
   }
 
   componentWillMount() {
-    fetchIssues()
-      .then(issues => {
+    this.fetchNextIssues();
+  }
+
+  fetchNextIssues(
+    url = `https://api.github.com/repos/${process.env
+      .REACT_APP_REPOSITORY}/issues`
+  ) {
+    fetchIssues(url)
+      .then(result => {
+        const { issues, next } = result;
         this.setState((prevState, props) => {
+          const prevIssues = prevState.issues;
+          const totalIssues = prevIssues ? prevIssues.concat(issues) : issues;
           return {
-            issuesByCreationDay: buildSeriesDataFromDatesWithValues(
-              countByCreationDay(issues)
-            ),
+            issues: totalIssues,
           };
         });
+        if (next) {
+          this.fetchNextIssues(next);
+        }
       })
       .catch(error => console.error(error));
   }
@@ -49,9 +60,11 @@ class App extends Component {
   }
 
   renderOpenedIssues() {
-    const issuesByCreationDay = this.state.issuesByCreationDay;
-    if (issuesByCreationDay) {
-      console.log(issuesByCreationDay);
+    const issues = this.state.issues;
+    if (issues) {
+      const issuesByCreationDay = buildSeriesDataFromDatesWithValues(
+        countByCreationDay(issues)
+      );
       return (
         <FlexibleXYPlot height={300}>
           <VerticalGridLines />

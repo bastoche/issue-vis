@@ -5,6 +5,7 @@
   "dependencies": {
     "@rdbird/eslint-config": "^5.0.1",
     "date-fns": "^1.28.5",
+    "parse-link-header": "^1.0.1",
     "prettier": "^1.7.0",
     "ramda": "^0.24.1",
     "react": "^15.6.1",
