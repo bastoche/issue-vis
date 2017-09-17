@@ -11,6 +11,28 @@ import {
 } from 'react-vis';
 
 class App extends Component {
+  componentWillMount() {
+    const headers = new Headers();
+    headers.append('Accept', 'application/vnd.github.v3+json');
+    headers.append(
+      'Authorization',
+      `token ${process.env.REACT_APP_GITHUB_TOKEN}`
+    );
+    fetch(
+      `https://api.github.com/repos/${process.env.REACT_APP_REPOSITORY}/issues`,
+      {
+        headers,
+      }
+    )
+      .then(response => {
+        return response.json();
+      })
+      .then(json => {
+        console.log(json);
+      })
+      .catch(error => console.error(error));
+  }
+
   render() {
     const data = [
       { x: 0, y: 8 },
