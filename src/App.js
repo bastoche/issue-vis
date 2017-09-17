@@ -74,9 +74,8 @@ class App extends Component {
           <LineSeries data={issuesByCreationDay} />
         </FlexibleXYPlot>
       );
-    } else {
-      return 'Fetching...';
     }
+    return 'Fetching...';
   }
 }
 

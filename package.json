@@ -16,8 +16,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "format": "eslint . --fix",
-    "lint": "eslint .",
+    "format": "eslint src --fix",
+    "lint": "eslint src",
     "test": "react-scripts test --env=jsdom",
     "validate": "yarn lint && yarn test",
     "eject": "react-scripts eject"
