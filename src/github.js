@@ -6,7 +6,8 @@ export function fetchIssues() {
     `token ${process.env.REACT_APP_GITHUB_TOKEN}`
   );
   return fetch(
-    `https://api.github.com/repos/${process.env.REACT_APP_REPOSITORY}/issues`,
+    `https://api.github.com/repos/${process.env
+      .REACT_APP_REPOSITORY}/issues?per_page=100`,
     {
       headers,
     }

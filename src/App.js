@@ -3,11 +3,11 @@ import '../node_modules/react-vis/dist/style.css';
 
 import React, { Component } from 'react';
 import {
+  FlexibleXYPlot,
   HorizontalGridLines,
   LineSeries,
   VerticalGridLines,
   XAxis,
-  XYPlot,
   YAxis,
 } from 'react-vis';
 import { format, parse } from 'date-fns';
@@ -53,13 +53,13 @@ class App extends Component {
     if (issuesByCreationDay) {
       console.log(issuesByCreationDay);
       return (
-        <XYPlot height={300} width={300}>
+        <FlexibleXYPlot height={300}>
           <VerticalGridLines />
           <HorizontalGridLines />
-          <XAxis tickFormat={value => format(parse(value), 'YYYY-MM-DD')} />
+          <XAxis tickFormat={value => format(parse(value), 'MMM Do')} />
           <YAxis />
           <LineSeries data={issuesByCreationDay} />
-        </XYPlot>
+        </FlexibleXYPlot>
       );
     } else {
       return 'Fetching...';
