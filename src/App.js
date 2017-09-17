@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
 import './App.css';
 import '../node_modules/react-vis/dist/style.css';
+
+import React, { Component } from 'react';
 import {
   HorizontalGridLines,
   LineSeries,
@@ -9,56 +10,60 @@ import {
   XYPlot,
   YAxis,
 } from 'react-vis';
+import { format, parse } from 'date-fns';
+
+import { fetchIssues } from './github.js';
+import {
+  countByCreationDay,
+  buildSeriesDataFromDatesWithValues,
+} from './series.js';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { issuesByCreationDay: null };
+  }
+
   componentWillMount() {
-    const headers = new Headers();
-    headers.append('Accept', 'application/vnd.github.v3+json');
-    headers.append(
-      'Authorization',
-      `token ${process.env.REACT_APP_GITHUB_TOKEN}`
-    );
-    fetch(
-      `https://api.github.com/repos/${process.env.REACT_APP_REPOSITORY}/issues`,
-      {
-        headers,
-      }
-    )
-      .then(response => {
-        return response.json();
-      })
-      .then(json => {
-        console.log(json);
+    fetchIssues()
+      .then(issues => {
+        this.setState((prevState, props) => {
+          return {
+            issuesByCreationDay: buildSeriesDataFromDatesWithValues(
+              countByCreationDay(issues)
+            ),
+          };
+        });
       })
       .catch(error => console.error(error));
   }
 
   render() {
-    const data = [
-      { x: 0, y: 8 },
-      { x: 1, y: 5 },
-      { x: 2, y: 4 },
-      { x: 3, y: 9 },
-      { x: 4, y: 1 },
-      { x: 5, y: 7 },
-      { x: 6, y: 6 },
-      { x: 7, y: 3 },
-      { x: 8, y: 2 },
-      { x: 9, y: 0 },
-    ];
     return (
       <div className="App">
         <h1>issue-vis</h1>
-        <h2>New issues</h2>
+        <h2>Opened issues</h2>
+        {this.renderOpenedIssues()}
+      </div>
+    );
+  }
+
+  renderOpenedIssues() {
+    const issuesByCreationDay = this.state.issuesByCreationDay;
+    if (issuesByCreationDay) {
+      console.log(issuesByCreationDay);
+      return (
         <XYPlot height={300} width={300}>
           <VerticalGridLines />
           <HorizontalGridLines />
-          <XAxis />
+          <XAxis tickFormat={value => format(parse(value), 'YYYY-MM-DD')} />
           <YAxis />
-          <LineSeries data={data} />
+          <LineSeries data={issuesByCreationDay} />
         </XYPlot>
-      </div>
-    );
+      );
+    } else {
+      return 'Fetching...';
+    }
   }
 }
 

@@ -4,7 +4,9 @@
   "private": true,
   "dependencies": {
     "@rdbird/eslint-config": "^5.0.1",
+    "date-fns": "^1.28.5",
     "prettier": "^1.7.0",
+    "ramda": "^0.24.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-scripts": "1.0.13",
