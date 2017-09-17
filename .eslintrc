@@ -1,0 +1,6 @@
+{
+  "env": {
+    "jest": true
+  },
+  "extends": ["@rdbird/eslint-config/base", "@rdbird/eslint-config/react"]
+}
