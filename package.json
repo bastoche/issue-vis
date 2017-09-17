@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@rdbird/eslint-config": "^5.0.1",    
+    "@rdbird/eslint-config": "^5.0.1",
     "prettier": "^1.7.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
@@ -15,7 +15,8 @@
     "build": "react-scripts build",
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "test": "react-scripts test --env=jsdom",    
+    "test": "react-scripts test --env=jsdom",
+    "validate": "yarn lint && yarn test",
     "eject": "react-scripts eject"
   }
 }
