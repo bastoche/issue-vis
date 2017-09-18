@@ -11,9 +11,8 @@ export function getCreationDay(issue) {
 }
 
 export function buildSeriesDataFromDatesWithValues(datesWithValues) {
-  return R.map(date => {
-    return makeSeriesObject(date, datesWithValues[date]);
-  }, R.keys(datesWithValues));
+  const functor = pair => makeSeriesObject(pair[0], pair[1]);
+  return R.map(functor, R.toPairs(datesWithValues));
 }
 
 function makeSeriesObject(key, value) {
