@@ -50,9 +50,13 @@ class App extends Component {
   }
 
   render() {
+    const repositoryLink = `https://www.github.com/${process.env
+      .REACT_APP_REPOSITORY}`;
     return (
       <div className="App">
         <h1>issue-vis</h1>
+        <h2>Data source</h2>
+        <a href={repositoryLink}>{process.env.REACT_APP_REPOSITORY}</a>
         <h2>Opened issues</h2>
         {this.renderOpenedIssues()}
       </div>
