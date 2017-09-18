@@ -5,19 +5,23 @@ import {
   filterIssuesWithLabels,
 } from './labels.js';
 
+function makeLabel(labelName) {
+  return {
+    name: labelName,
+  };
+}
+
+function makeIssue(labelNames, id = 1) {
+  const labels = labelNames.map(makeLabel);
+  return {
+    id,
+    labels,
+  };
+}
+
 describe('getLabels', () => {
   it('returns the labels of an issue', () => {
-    const issue = {
-      id: 1,
-      labels: [
-        {
-          name: 'bug',
-        },
-        {
-          name: 'feature',
-        },
-      ],
-    };
+    const issue = makeIssue(['bug', 'feature']);
     expect(getLabels(issue)).toEqual(['bug', 'feature']);
   });
 });
@@ -25,28 +29,9 @@ describe('getLabels', () => {
 describe('getAllLabels', () => {
   it('returns the labels of all issues', () => {
     const issues = [
-      {
-        id: 1,
-        labels: [
-          {
-            name: 'feature',
-          },
-        ],
-      },
-      {
-        id: 2,
-        labels: [
-          {
-            name: 'feature',
-          },
-          {
-            name: 'bug',
-          },
-        ],
-      },
-      {
-        id: 3,
-      },
+      makeIssue(['feature']),
+      makeIssue(['feature', 'bug']),
+      makeIssue([]),
     ];
     expect(getAllLabels(issues)).toEqual(['bug', 'feature']);
   });
@@ -54,14 +39,7 @@ describe('getAllLabels', () => {
 
 describe('hasLabel', () => {
   it('returns true if the issue has at least one label in the list', () => {
-    const issue = {
-      id: 1,
-      labels: [
-        {
-          name: 'feature',
-        },
-      ],
-    };
+    const issue = makeIssue(['feature']);
     expect(hasLabel(['feature'])(issue)).toBe(true);
     expect(hasLabel(['bug'])(issue)).toBe(false);
     expect(hasLabel([])(issue)).toBe(false);
@@ -71,41 +49,12 @@ describe('hasLabel', () => {
 describe('filterIssuesWithLabels', () => {
   it('returns only issues with the specified labels', () => {
     const issues = [
-      {
-        id: 1,
-        labels: [
-          {
-            name: 'feature',
-          },
-        ],
-      },
-      {
-        id: 2,
-        labels: [
-          {
-            name: 'feature',
-          },
-          {
-            name: 'bug',
-          },
-        ],
-      },
-      {
-        id: 3,
-      },
+      makeIssue(['feature'], 1),
+      makeIssue(['feature', 'bug'], 2),
+      makeIssue([], 3),
     ];
     expect(filterIssuesWithLabels(issues, ['bug'])).toEqual([
-      {
-        id: 2,
-        labels: [
-          {
-            name: 'feature',
-          },
-          {
-            name: 'bug',
-          },
-        ],
-      },
+      makeIssue(['feature', 'bug'], 2),
     ]);
   });
 });
