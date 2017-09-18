@@ -8,7 +8,7 @@ import {
   countByCreationDay,
   buildSeriesDataFromDatesWithValues,
 } from './series.js';
-import { getAllLabels } from './labels.js';
+import { getAllLabels, filterIssuesWithLabels } from './labels.js';
 import { TimeChart } from './timechart.js';
 import { Checkbox } from './checkbox.js';
 
@@ -96,7 +96,9 @@ class App extends Component {
     const issues = this.state.issues;
     if (issues) {
       const issuesByCreationDay = buildSeriesDataFromDatesWithValues(
-        countByCreationDay(issues)
+        countByCreationDay(
+          filterIssuesWithLabels(issues, this.state.checkedLabels)
+        )
       );
       return <TimeChart data={issuesByCreationDay} />;
     }

@@ -1,4 +1,9 @@
-import { getAllLabels, getLabels } from './labels.js';
+import {
+  getAllLabels,
+  getLabels,
+  hasLabel,
+  filterIssuesWithLabels,
+} from './labels.js';
 
 describe('getLabels', () => {
   it.skip('returns the labels of an issue', () => {
@@ -44,5 +49,63 @@ describe('getAllLabels', () => {
       },
     ];
     expect(getAllLabels(issues)).toEqual(['bug', 'feature']);
+  });
+});
+
+describe('hasLabel', () => {
+  it('returns true if the issue has at least one label in the list', () => {
+    const issue = {
+      id: 1,
+      labels: [
+        {
+          name: 'feature',
+        },
+      ],
+    };
+    expect(hasLabel(['feature'])(issue)).toBe(true);
+    expect(hasLabel(['bug'])(issue)).toBe(false);
+    expect(hasLabel([])(issue)).toBe(false);
+  });
+});
+
+describe('filterIssuesWithLabels', () => {
+  it('returns only issues with the specified labels', () => {
+    const issues = [
+      {
+        id: 1,
+        labels: [
+          {
+            name: 'feature',
+          },
+        ],
+      },
+      {
+        id: 2,
+        labels: [
+          {
+            name: 'feature',
+          },
+          {
+            name: 'bug',
+          },
+        ],
+      },
+      {
+        id: 3,
+      },
+    ];
+    expect(filterIssuesWithLabels(issues, ['bug'])).toEqual([
+      {
+        id: 2,
+        labels: [
+          {
+            name: 'feature',
+          },
+          {
+            name: 'bug',
+          },
+        ],
+      },
+    ]);
   });
 });
