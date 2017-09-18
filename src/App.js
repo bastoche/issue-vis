@@ -53,7 +53,7 @@ class App extends Component {
         <a href={repositoryLink}>{process.env.REACT_APP_REPOSITORY}</a>
         <h3>Labels</h3>
         {this.renderLabels()}
-        <h2>Opened issues</h2>
+        <h2>New issues</h2>
         {this.renderOpenedIssues()}
       </div>
     );

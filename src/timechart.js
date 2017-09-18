@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   FlexibleXYPlot,
   HorizontalGridLines,
-  LineSeries,
+  VerticalBarSeries,
   VerticalGridLines,
   XAxis,
   YAxis,
@@ -13,12 +13,12 @@ export class TimeChart extends Component {
   render() {
     const data = this.props.data;
     return (
-      <FlexibleXYPlot height={300} xType="time">
+      <FlexibleXYPlot height={300} xType="time" stackBy="y">
         <VerticalGridLines />
         <HorizontalGridLines />
         <XAxis />
         <YAxis />
-        <LineSeries data={data} />
+        <VerticalBarSeries data={data} />
       </FlexibleXYPlot>
     );
   }
