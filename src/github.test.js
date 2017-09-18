@@ -1,4 +1,4 @@
-import { getNextPage } from './github.js';
+import { getNextPage, fetchAllIssues } from './github.js';
 
 describe('getNextPage', () => {
   it('returns the next page from a link header if it exists', () => {
@@ -18,5 +18,28 @@ describe('getNextPage', () => {
   it('returns null if the link header is empty or null', () => {
     expect(getNextPage('')).toBeNull();
     expect(getNextPage(null)).toBeNull();
+  });
+});
+
+describe('fetchAllIssues', () => {
+  it('fetches issues', () => {
+    const fetchIssues = url =>
+      Promise.resolve({ issues: ['issue1', 'issue2'] });
+    return fetchAllIssues('url', fetchIssues, () => {}).then(fetchedIssues => {
+      expect(fetchedIssues).toEqual(['issue1', 'issue2']);
+    });
+  });
+
+  it('fetches next issues if the first fetch returns a next url', () => {
+    const fetchIssues = jest.fn();
+    fetchIssues
+      .mockReturnValueOnce(
+        Promise.resolve({ issues: ['issue1', 'issue2'], next: 'nextUrl' })
+      )
+      .mockReturnValueOnce(Promise.resolve({ issues: ['issue3', 'issue4'] }));
+
+    return fetchAllIssues('url', fetchIssues, () => {}).then(fetchedIssues => {
+      expect(fetchedIssues).toEqual(['issue3', 'issue4']);
+    });
   });
 });

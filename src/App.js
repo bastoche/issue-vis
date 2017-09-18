@@ -3,7 +3,7 @@ import '../node_modules/react-vis/dist/style.css';
 
 import React, { Component } from 'react';
 
-import { fetchIssues } from './github.js';
+import { fetchIssues, fetchAllIssues } from './github.js';
 import {
   countByCreationDay,
   buildSeriesDataFromDatesWithValues,
@@ -19,29 +19,22 @@ class App extends Component {
   }
 
   componentWillMount() {
-    this.fetchNextIssues();
+    fetchAllIssues(
+      `https://api.github.com/repos/${process.env.REACT_APP_REPOSITORY}/issues`,
+      fetchIssues,
+      this.onIssuesFetched
+    );
   }
 
-  fetchNextIssues(
-    url = `https://api.github.com/repos/${process.env
-      .REACT_APP_REPOSITORY}/issues`
-  ) {
-    fetchIssues(url)
-      .then(result => {
-        const { issues, next } = result;
-        this.setState((prevState, props) => {
-          const prevIssues = prevState.issues;
-          const totalIssues = prevIssues ? prevIssues.concat(issues) : issues;
-          return {
-            issues: totalIssues,
-          };
-        });
-        if (next) {
-          this.fetchNextIssues(next);
-        }
-      })
-      .catch(error => console.error(error));
-  }
+  onIssuesFetched = issues => {
+    this.setState((prevState, props) => {
+      const prevIssues = prevState.issues;
+      const totalIssues = prevIssues ? prevIssues.concat(issues) : issues;
+      return {
+        issues: totalIssues,
+      };
+    });
+  };
 
   render() {
     const repositoryLink = `https://www.github.com/${process.env

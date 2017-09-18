@@ -19,6 +19,19 @@ export function fetchIssues(url) {
   });
 }
 
+export function fetchAllIssues(url, fetchIssues, onIssuesFetched) {
+  return fetchIssues(url)
+    .then(result => {
+      const { issues, next } = result;
+      onIssuesFetched(issues);
+      if (next) {
+        return fetchAllIssues(next, fetchIssues, onIssuesFetched);
+      }
+      return issues;
+    })
+    .catch(error => console.error(error));
+}
+
 export function getNextPage(linkHeader) {
   const parsed = parse(linkHeader);
   if (parsed && parsed.next) {
