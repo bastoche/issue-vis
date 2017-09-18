@@ -8,12 +8,14 @@ import {
   countByCreationDay,
   buildSeriesDataFromDatesWithValues,
 } from './series.js';
+import { getAllLabels } from './labels.js';
 import { TimeChart } from './timechart.js';
+import { Checkbox } from './checkbox.js';
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { issues: null };
+    this.state = { issues: null, checkedLabels: [] };
   }
 
   componentWillMount() {
@@ -49,11 +51,46 @@ class App extends Component {
         <h1>issue-vis</h1>
         <h2>Data source</h2>
         <a href={repositoryLink}>{process.env.REACT_APP_REPOSITORY}</a>
+        <h3>Labels</h3>
+        {this.renderLabels()}
         <h2>Opened issues</h2>
         {this.renderOpenedIssues()}
       </div>
     );
   }
+
+  renderLabels() {
+    const issues = this.state.issues;
+    if (issues) {
+      const labels = getAllLabels(this.state.issues);
+      return labels.map(label => (
+        <Checkbox
+          label={label}
+          key={label}
+          checked={this.state.checkedLabels.includes(label)}
+          onCheckboxChanged={this.handleCheckboxChanged}
+        />
+      ));
+    }
+    return this.renderFetchingText();
+  }
+
+  handleCheckboxChanged = label => {
+    this.setState((prevState, props) => {
+      if (prevState.checkedLabels.includes(label)) {
+        return {
+          ...prevState,
+          checkedLabels: prevState.checkedLabels.filter(
+            checkedLabel => checkedLabel !== label
+          ),
+        };
+      }
+      return {
+        ...prevState,
+        checkedLabels: [...prevState.checkedLabels, label],
+      };
+    });
+  };
 
   renderOpenedIssues() {
     const issues = this.state.issues;
@@ -63,6 +100,10 @@ class App extends Component {
       );
       return <TimeChart data={issuesByCreationDay} />;
     }
+    return this.renderFetchingText();
+  }
+
+  renderFetchingText() {
     return 'Fetching...';
   }
 }

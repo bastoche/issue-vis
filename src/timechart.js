@@ -25,5 +25,5 @@ export class TimeChart extends Component {
 }
 
 TimeChart.propTypes = {
-  data: PropTypes.array,
+  data: PropTypes.array.isRequired,
 };
