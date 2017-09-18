@@ -10,7 +10,6 @@ import {
   XAxis,
   YAxis,
 } from 'react-vis';
-import { format, parse } from 'date-fns';
 
 import { fetchIssues } from './github.js';
 import {
@@ -70,10 +69,10 @@ class App extends Component {
         countByCreationDay(issues)
       );
       return (
-        <FlexibleXYPlot height={300}>
+        <FlexibleXYPlot height={300} xType="time">
           <VerticalGridLines />
           <HorizontalGridLines />
-          <XAxis tickFormat={value => format(parse(value), 'MMM Do')} />
+          <XAxis />
           <YAxis />
           <LineSeries data={issuesByCreationDay} />
         </FlexibleXYPlot>

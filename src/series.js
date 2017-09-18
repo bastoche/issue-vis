@@ -1,4 +1,4 @@
-import { getTime, format, parse } from 'date-fns';
+import { startOfDay, getTime, parse } from 'date-fns';
 import R from 'ramda';
 
 export function countByCreationDay(issues) {
@@ -7,15 +7,15 @@ export function countByCreationDay(issues) {
 
 export function getCreationDay(issue) {
   const date = parse(issue.created_at);
-  return format(date, 'YYYY-MM-DD');
+  return getTime(startOfDay(date));
 }
 
 export function buildSeriesDataFromDatesWithValues(datesWithValues) {
-  return R.map(key => {
-    return makeSeriesObject(getTime(parse(key)), datesWithValues[key]);
+  return R.map(date => {
+    return makeSeriesObject(date, datesWithValues[date]);
   }, R.keys(datesWithValues));
 }
 
 function makeSeriesObject(key, value) {
-  return { x: key, y: value };
+  return { x: Number(key), y: value };
 }
