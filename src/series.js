@@ -5,33 +5,38 @@ export function countByCreationDay(issues) {
   if (issues.length === 0) {
     return {};
   }
-  const firstIssueDate = parseIssueCreatedDate(issues[0]);
-  const minDay = R.reduce(
-    R.min,
-    firstIssueDate,
-    R.map(parseIssueCreatedDate, issues)
+  const datesWithZeroAsValues = getDatesWithZeroAsValues(
+    getAllDaysBetweenIssues(issues)
   );
-  const maxDay = R.reduce(
-    R.max,
-    firstIssueDate,
-    R.map(parseIssueCreatedDate, issues)
+  const addDay = (datesWithValues, day) =>
+    R.assoc(getTime(day), datesWithValues[getTime(day)] + 1, datesWithValues);
+  const datesWithValues = R.reduce(
+    addDay,
+    datesWithZeroAsValues,
+    R.map(getCreationDay, issues)
   );
-  const datesWithValues = {};
-  const days = eachDay(minDay, maxDay);
-  R.forEach(day => (datesWithValues[getTime(day)] = 0), days);
-  R.forEach(issue => {
-    const creationDay = getCreationDay(issue);
-    datesWithValues[creationDay] += 1;
-  }, issues);
   return datesWithValues;
 }
 
-export function getCreationDay(issue) {
-  const date = parseIssueCreatedDate(issue);
-  return getTime(startOfDay(date));
+function getAllDaysBetweenIssues(issues) {
+  const issuesCreationDates = R.map(parseIssueCreationDate, issues);
+  const firstIssueDate = parseIssueCreationDate(issues[0]);
+  const minDay = R.reduce(R.min, firstIssueDate, issuesCreationDates);
+  const maxDay = R.reduce(R.max, firstIssueDate, issuesCreationDates);
+  return eachDay(minDay, maxDay);
 }
 
-function parseIssueCreatedDate(issue) {
+function getDatesWithZeroAsValues(days) {
+  const addZero = (datesWithValues, day) =>
+    R.assoc(getTime(day), 0, datesWithValues);
+  return R.reduce(addZero, {}, days);
+}
+
+export function getCreationDay(issue) {
+  return getTime(startOfDay(issue.created_at));
+}
+
+function parseIssueCreationDate(issue) {
   return parse(issue.created_at);
 }
 
