@@ -24,6 +24,10 @@ describe('getLabels', () => {
     const issue = makeIssue(['bug', 'feature']);
     expect(getLabels(issue)).toEqual(['bug', 'feature']);
   });
+  it('returns an empty arry for an issue with no label', () => {
+    const issue = makeIssue([]);
+    expect(getLabels(issue)).toEqual([]);
+  });
 });
 
 describe('getAllLabels', () => {
