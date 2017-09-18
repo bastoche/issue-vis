@@ -6,7 +6,7 @@ import {
 } from './labels.js';
 
 describe('getLabels', () => {
-  it.skip('returns the labels of an issue', () => {
+  it('returns the labels of an issue', () => {
     const issue = {
       id: 1,
       labels: [
