@@ -2,20 +2,13 @@ import './App.css';
 import '../node_modules/react-vis/dist/style.css';
 
 import React, { Component } from 'react';
-import {
-  FlexibleXYPlot,
-  HorizontalGridLines,
-  LineSeries,
-  VerticalGridLines,
-  XAxis,
-  YAxis,
-} from 'react-vis';
 
 import { fetchIssues } from './github.js';
 import {
   countByCreationDay,
   buildSeriesDataFromDatesWithValues,
 } from './series.js';
+import { TimeChart } from './timechart.js';
 
 class App extends Component {
   constructor(props) {
@@ -68,15 +61,7 @@ class App extends Component {
       const issuesByCreationDay = buildSeriesDataFromDatesWithValues(
         countByCreationDay(issues)
       );
-      return (
-        <FlexibleXYPlot height={300} xType="time">
-          <VerticalGridLines />
-          <HorizontalGridLines />
-          <XAxis />
-          <YAxis />
-          <LineSeries data={issuesByCreationDay} />
-        </FlexibleXYPlot>
-      );
+      return <TimeChart data={issuesByCreationDay} />;
     }
     return 'Fetching...';
   }
