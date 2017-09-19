@@ -1,10 +1,7 @@
 import R from 'ramda';
 
 export function getLabels(issue) {
-  if (issue.labels) {
-    return R.map(label => label.name, issue.labels);
-  }
-  return [];
+  return R.map(label => label.name, issue.labels);
 }
 
 export function getAllLabels(issues) {
