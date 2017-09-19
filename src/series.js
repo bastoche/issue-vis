@@ -1,13 +1,11 @@
 import { startOfDay, getTime, parse, eachDay } from 'date-fns';
 import R from 'ramda';
 
-export function countByCreationDay(issues) {
+export function countByCreationDay(issues, days) {
   if (issues.length === 0) {
     return {};
   }
-  const datesWithZeroAsValues = getDatesWithZeroAsValues(
-    getAllDaysBetweenIssues(issues)
-  );
+  const datesWithZeroAsValues = getDatesWithZeroAsValues(days);
   const addDay = (datesWithValues, day) =>
     R.assoc(getTime(day), datesWithValues[getTime(day)] + 1, datesWithValues);
   const datesWithValues = R.reduce(
@@ -18,7 +16,10 @@ export function countByCreationDay(issues) {
   return datesWithValues;
 }
 
-function getAllDaysBetweenIssues(issues) {
+export function getAllDaysBetweenIssues(issues) {
+  if (issues.length === 0) {
+    return [];
+  }
   const issuesCreationDates = R.map(parseIssueCreationDate, issues);
   const firstIssueDate = parseIssueCreationDate(issues[0]);
   const minDay = R.reduce(R.min, firstIssueDate, issuesCreationDates);

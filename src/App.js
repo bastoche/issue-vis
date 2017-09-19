@@ -6,8 +6,9 @@ import R from 'ramda';
 
 import { fetchIssues, fetchAllIssues, issuesUrl } from './github.js';
 import {
-  countByCreationDay,
   buildSeriesDataFromDatesWithValues,
+  countByCreationDay,
+  getAllDaysBetweenIssues,
 } from './series.js';
 import { getAllLabels, filterIssuesWithLabels } from './labels.js';
 import { TimeChart } from './timechart.js';
@@ -94,7 +95,7 @@ class App extends Component {
   };
 
   renderLabels() {
-    const issues = R.flatten(R.values(this.state.issues));
+    const issues = this.allIssues();
     if (issues) {
       const labels = getAllLabels(issues);
       const style = { columnCount: 2, columnWidth: '50%' };
@@ -132,10 +133,12 @@ class App extends Component {
   };
 
   renderOpenedIssues() {
+    const xRange = getAllDaysBetweenIssues(this.allIssues());
     const buildNewIssuesSeries = issues =>
       buildSeriesDataFromDatesWithValues(
         countByCreationDay(
-          filterIssuesWithLabels(issues, this.state.checkedLabels)
+          filterIssuesWithLabels(issues, this.state.checkedLabels),
+          xRange
         )
       );
     const data = R.map(buildNewIssuesSeries, this.state.issues);
@@ -143,6 +146,10 @@ class App extends Component {
       this.state.checkedRepositories.includes(repository);
     const items = R.filter(isRepositoryChecked, repositories());
     return <TimeChart data={data} items={items} />;
+  }
+
+  allIssues() {
+    return R.flatten(R.values(this.state.issues));
   }
 }
 
