@@ -1,4 +1,4 @@
-import { getNextPage, fetchAllIssues } from './github.js';
+import { getNextPage, fetchAllIssues, issuesUrl } from './github.js';
 
 describe('getNextPage', () => {
   it('returns the next page from a link header if it exists', () => {
@@ -41,5 +41,13 @@ describe('fetchAllIssues', () => {
     return fetchAllIssues('url', fetchIssues, () => {}).then(fetchedIssues => {
       expect(fetchedIssues).toEqual(['issue3', 'issue4']);
     });
+  });
+});
+
+describe('issuesUrl', () => {
+  it('returns the url of the github api for issues of the specified repository', () => {
+    expect(issuesUrl('my_repository')).toEqual(
+      'https://api.github.com/repos/my_repository/issues'
+    );
   });
 });

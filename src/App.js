@@ -31,7 +31,7 @@ class App extends Component {
   fetchAllIssues(repository) {
     fetchAllIssues(
       issuesUrl(repository),
-      fetchIssues,
+      fetchIssues(process.env.REACT_APP_GITHUB_TOKEN),
       this.onIssuesFetched(repository)
     );
   }
