@@ -7,30 +7,31 @@ import {
 
 import { startOfDay, getTime } from 'date-fns';
 
-function makeIssue(createdAt) {
+function issue(createdAt) {
   return {
     created_at: createdAt,
   };
 }
 
+function day(day) {
+  return `2011-04-${day}T13:33:48Z`;
+}
+
 describe('getCreationDay', () => {
   it('returns the creation day of an issue', () => {
-    const date = '2011-04-22T13:33:48Z';
-    const issue = makeIssue(date);
-    expect(getCreationDay(issue)).toEqual(getTime(startOfDay(date)));
+    expect(getCreationDay(issue(day(22)))).toEqual(
+      getTime(startOfDay(day(22)))
+    );
   });
 });
 
 describe('getAllDaysBetweenIssues', () => {
   it('returns each day between the earlier and the last creation dates', () => {
-    const issues = [
-      makeIssue('2011-04-22T13:33:48Z'),
-      makeIssue('2011-04-24T13:33:48Z'),
-    ];
+    const issues = [issue(day(22)), issue(day(24))];
     expect(getAllDaysBetweenIssues(issues)).toEqual([
-      startOfDay('2011-04-22T13:33:48Z'),
-      startOfDay('2011-04-23T13:33:48Z'),
-      startOfDay('2011-04-24T13:33:48Z'),
+      startOfDay(day(22)),
+      startOfDay(day(23)),
+      startOfDay(day(24)),
     ]);
   });
   it('works with no date', () => {
@@ -44,14 +45,10 @@ describe('countByCreationDay', () => {
   });
 
   it('works with several issues', () => {
-    const issues = [
-      makeIssue('2011-04-22T13:33:48Z'),
-      makeIssue('2011-04-22T14:33:48Z'),
-      makeIssue('2011-04-23T14:33:48Z'),
-    ];
-    const firstDay = getTime(startOfDay('2011-04-22T13:33:48Z'));
-    const secondDay = getTime(startOfDay('2011-04-23T14:33:48Z'));
-    const thirdDay = getTime(startOfDay('2011-04-24T14:33:48Z'));
+    const issues = [issue(day(22)), issue(day(22)), issue(day(23))];
+    const firstDay = getTime(startOfDay(day(22)));
+    const secondDay = getTime(startOfDay(day(23)));
+    const thirdDay = getTime(startOfDay(day(24)));
     expect(
       countByCreationDay(issues, [firstDay, secondDay, thirdDay])
     ).toEqual({
@@ -64,8 +61,8 @@ describe('countByCreationDay', () => {
 
 describe('buildSeriesDataFromDatesWithValues', () => {
   it('returns data that can be fed to a series component', () => {
-    const firstDay = getTime(startOfDay('2011-04-22T13:33:48Z'));
-    const secondDay = getTime(startOfDay('2011-04-23T14:33:48Z'));
+    const firstDay = getTime(startOfDay(day(22)));
+    const secondDay = getTime(startOfDay(day(23)));
     const datesWithValues = {
       [firstDay]: 2,
       [secondDay]: 1,
