@@ -20,7 +20,7 @@ function repositories() {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { issues: {}, checkedLabels: [] };
+    this.state = { issues: {}, checkedLabels: [], checkedRepositories: [] };
   }
 
   componentWillMount() {
@@ -52,18 +52,11 @@ class App extends Component {
   };
 
   render() {
-    const repositoryLink = repository => `https://www.github.com/${repository}`;
     return (
       <div className="App">
         <h1>issue-vis</h1>
         <h2>Data sources</h2>
-        <ul>
-          {repositories().map(repository => (
-            <li key={repository}>
-              <a href={repositoryLink(repository)}>{repository}</a>
-            </li>
-          ))}
-        </ul>
+        {this.renderRepositories()}
         <h3>Labels</h3>
         {this.renderLabels()}
         <h2>New issues</h2>
@@ -72,23 +65,56 @@ class App extends Component {
     );
   }
 
+  renderRepositories() {
+    return repositories().map(repository => (
+      <Checkbox
+        label={repository}
+        key={repository}
+        checked={this.state.checkedRepositories.includes(repository)}
+        onCheckboxChanged={this.handleRepositoryCheckboxChanged}
+      />
+    ));
+  }
+
+  handleRepositoryCheckboxChanged = repository => {
+    this.setState((prevState, props) => {
+      if (prevState.checkedRepositories.includes(repository)) {
+        return {
+          ...prevState,
+          checkedRepositories: prevState.checkedRepositories.filter(
+            checkedRepository => checkedRepository !== repository
+          ),
+        };
+      }
+      return {
+        ...prevState,
+        checkedRepositories: [...prevState.checkedRepositories, repository],
+      };
+    });
+  };
+
   renderLabels() {
     const issues = R.flatten(R.values(this.state.issues));
     if (issues) {
       const labels = getAllLabels(issues);
-      return labels.map(label => (
-        <Checkbox
-          label={label}
-          key={label}
-          checked={this.state.checkedLabels.includes(label)}
-          onCheckboxChanged={this.handleCheckboxChanged}
-        />
-      ));
+      const style = { columnCount: 2, columnWidth: '50%' };
+      return (
+        <div style={style}>
+          {labels.map(label => (
+            <Checkbox
+              label={label}
+              key={label}
+              checked={this.state.checkedLabels.includes(label)}
+              onCheckboxChanged={this.handleLabelCheckboxChanged}
+            />
+          ))}
+        </div>
+      );
     }
     return 'Fetching...';
   }
 
-  handleCheckboxChanged = label => {
+  handleLabelCheckboxChanged = label => {
     this.setState((prevState, props) => {
       if (prevState.checkedLabels.includes(label)) {
         return {
@@ -113,7 +139,10 @@ class App extends Component {
         )
       );
     const data = R.map(buildNewIssuesSeries, this.state.issues);
-    return <TimeChart data={data} items={repositories()} />;
+    const isRepositoryChecked = repository =>
+      this.state.checkedRepositories.includes(repository);
+    const items = R.filter(isRepositoryChecked, repositories());
+    return <TimeChart data={data} items={items} />;
   }
 }
 
