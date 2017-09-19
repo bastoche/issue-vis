@@ -3,7 +3,7 @@ import '../node_modules/react-vis/dist/style.css';
 
 import React, { Component } from 'react';
 
-import { fetchIssues, fetchAllIssues } from './github.js';
+import { fetchIssues, fetchAllIssues, issuesUrl } from './github.js';
 import {
   countByCreationDay,
   buildSeriesDataFromDatesWithValues,
@@ -15,25 +15,31 @@ import { Checkbox } from './checkbox.js';
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { issues: null, checkedLabels: [] };
+    this.state = { issues: {}, checkedLabels: [] };
   }
 
   componentWillMount() {
     fetchAllIssues(
-      `https://api.github.com/repos/${process.env.REACT_APP_REPOSITORY}/issues`,
+      issuesUrl(process.env.REACT_APP_REPOSITORY),
       fetchIssues,
-      this.onIssuesFetched
+      this.onIssuesFetched(process.env.REACT_APP_REPOSITORY)
     );
   }
 
-  onIssuesFetched = issues => {
-    this.setState((prevState, props) => {
-      const prevIssues = prevState.issues;
-      const totalIssues = prevIssues ? prevIssues.concat(issues) : issues;
-      return {
-        issues: totalIssues,
-      };
-    });
+  onIssuesFetched = key => {
+    return issues => {
+      this.setState((prevState, props) => {
+        const prevIssues = prevState.issues[key];
+        const totalIssues = prevIssues ? prevIssues.concat(issues) : issues;
+        return {
+          ...prevState,
+          issues: {
+            ...prevState.issues,
+            [key]: totalIssues,
+          },
+        };
+      });
+    };
   };
 
   render() {
@@ -53,9 +59,9 @@ class App extends Component {
   }
 
   renderLabels() {
-    const issues = this.state.issues;
+    const issues = this.state.issues[process.env.REACT_APP_REPOSITORY];
     if (issues) {
-      const labels = getAllLabels(this.state.issues);
+      const labels = getAllLabels(issues);
       return labels.map(label => (
         <Checkbox
           label={label}
@@ -86,7 +92,7 @@ class App extends Component {
   };
 
   renderOpenedIssues() {
-    const issues = this.state.issues;
+    const issues = this.state.issues[process.env.REACT_APP_REPOSITORY];
     if (issues) {
       const issuesByCreationDay = buildSeriesDataFromDatesWithValues(
         countByCreationDay(

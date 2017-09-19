@@ -39,3 +39,7 @@ export function getNextPage(linkHeader) {
   }
   return null;
 }
+
+export function issuesUrl(repository) {
+  return `https://api.github.com/repos/${repository}/issues`;
+}
