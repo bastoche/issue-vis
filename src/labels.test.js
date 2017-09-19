@@ -61,4 +61,18 @@ describe('filterIssuesWithLabels', () => {
       makeIssue(['feature', 'bug'], 2),
     ]);
   });
+  it('works with no labels', () => {
+    const issues = [
+      makeIssue(['feature'], 1),
+      makeIssue(['feature', 'bug'], 2),
+      makeIssue([], 3),
+    ];
+    expect(filterIssuesWithLabels(issues, [])).toEqual([]);
+  });
+  it('works with no issues', () => {
+    expect(filterIssuesWithLabels([], ['bug'])).toEqual([]);
+  });
+  it('works with undefined issues', () => {
+    expect(filterIssuesWithLabels(undefined, ['bug'])).toEqual([]);
+  });
 });

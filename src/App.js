@@ -2,6 +2,7 @@ import './App.css';
 import '../node_modules/react-vis/dist/style.css';
 
 import React, { Component } from 'react';
+import R from 'ramda';
 
 import { fetchIssues, fetchAllIssues, issuesUrl } from './github.js';
 import {
@@ -12,6 +13,10 @@ import { getAllLabels, filterIssuesWithLabels } from './labels.js';
 import { TimeChart } from './timechart.js';
 import { Checkbox } from './checkbox.js';
 
+function repositories() {
+  return process.env.REACT_APP_REPOSITORIES.split(',');
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -19,10 +24,14 @@ class App extends Component {
   }
 
   componentWillMount() {
+    repositories().map(repository => this.fetchAllIssues(repository));
+  }
+
+  fetchAllIssues(repository) {
     fetchAllIssues(
-      issuesUrl(process.env.REACT_APP_REPOSITORY),
+      issuesUrl(repository),
       fetchIssues,
-      this.onIssuesFetched(process.env.REACT_APP_REPOSITORY)
+      this.onIssuesFetched(repository)
     );
   }
 
@@ -43,13 +52,18 @@ class App extends Component {
   };
 
   render() {
-    const repositoryLink = `https://www.github.com/${process.env
-      .REACT_APP_REPOSITORY}`;
+    const repositoryLink = repository => `https://www.github.com/${repository}`;
     return (
       <div className="App">
         <h1>issue-vis</h1>
-        <h2>Data source</h2>
-        <a href={repositoryLink}>{process.env.REACT_APP_REPOSITORY}</a>
+        <h2>Data sources</h2>
+        <ul>
+          {repositories().map(repository => (
+            <li key={repository}>
+              <a href={repositoryLink(repository)}>{repository}</a>
+            </li>
+          ))}
+        </ul>
         <h3>Labels</h3>
         {this.renderLabels()}
         <h2>New issues</h2>
@@ -59,7 +73,7 @@ class App extends Component {
   }
 
   renderLabels() {
-    const issues = this.state.issues[process.env.REACT_APP_REPOSITORY];
+    const issues = R.flatten(R.values(this.state.issues));
     if (issues) {
       const labels = getAllLabels(issues);
       return labels.map(label => (
@@ -71,7 +85,7 @@ class App extends Component {
         />
       ));
     }
-    return this.renderFetchingText();
+    return 'Fetching...';
   }
 
   handleCheckboxChanged = label => {
@@ -92,20 +106,14 @@ class App extends Component {
   };
 
   renderOpenedIssues() {
-    const issues = this.state.issues[process.env.REACT_APP_REPOSITORY];
-    if (issues) {
-      const issuesByCreationDay = buildSeriesDataFromDatesWithValues(
+    const buildNewIssuesSeries = issues =>
+      buildSeriesDataFromDatesWithValues(
         countByCreationDay(
           filterIssuesWithLabels(issues, this.state.checkedLabels)
         )
       );
-      return <TimeChart data={issuesByCreationDay} />;
-    }
-    return this.renderFetchingText();
-  }
-
-  renderFetchingText() {
-    return 'Fetching...';
+    const data = R.map(buildNewIssuesSeries, this.state.issues);
+    return <TimeChart data={data} items={repositories()} />;
   }
 }
 

@@ -12,7 +12,7 @@ export function getAllLabels(issues) {
 }
 
 export function filterIssuesWithLabels(issues, labels) {
-  return R.filter(hasLabel(labels), issues);
+  return R.filter(hasLabel(labels), issues || []);
 }
 
 export function hasLabel(labels) {

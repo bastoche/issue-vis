@@ -22,8 +22,7 @@ describe('getCreationDay', () => {
 
 describe('countByCreationDay', () => {
   it('works with no issues', () => {
-    const issues = [];
-    expect(countByCreationDay(issues)).toEqual({});
+    expect(countByCreationDay([])).toEqual({});
   });
 
   it('works with several issues', () => {
@@ -69,5 +68,8 @@ describe('buildSeriesDataFromDatesWithValues', () => {
       { x: Number(firstDay), y: 2 },
       { x: Number(secondDay), y: 1 },
     ]);
+  });
+  it('works with empty data', () => {
+    expect(buildSeriesDataFromDatesWithValues({})).toEqual([]);
   });
 });
