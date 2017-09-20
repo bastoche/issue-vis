@@ -12,20 +12,23 @@ import {
 
 export class TimeChart extends Component {
   render() {
+    const style = { marginBottom: '70px' };
     return (
-      <FlexibleXYPlot height={300} xType="time" stackBy="y">
-        <VerticalGridLines />
-        <HorizontalGridLines />
-        <XAxis />
-        <YAxis />
-        {this.props.items.map(item => (
-          <VerticalBarSeries key={item} data={this.props.data[item]} />
-        ))}
-        <DiscreteColorLegend
-          orientation="horizontal"
-          items={this.props.items}
-        />
-      </FlexibleXYPlot>
+      <div style={style}>
+        <FlexibleXYPlot height={300} xType="time" stackBy="y">
+          <VerticalGridLines />
+          <HorizontalGridLines />
+          <XAxis />
+          <YAxis />
+          {this.props.items.map(item => (
+            <VerticalBarSeries key={item} data={this.props.data[item]} />
+          ))}
+          <DiscreteColorLegend
+            orientation="horizontal"
+            items={this.props.items}
+          />
+        </FlexibleXYPlot>
+      </div>
     );
   }
 }

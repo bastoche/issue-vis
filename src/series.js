@@ -21,15 +21,15 @@ export function cumulatedCount(issues, days) {
     return {};
   }
   const datesWithZeroAsValues = getDatesWithZeroAsValues(days);
-  const addDay = (datesWithValues, day) =>
-    R.assoc(getTime(day), datesWithValues[getTime(day)] + 1, datesWithValues);
+  const addDay = (acc, day) =>
+    R.assoc(getTime(day), acc[getTime(day)] + 1, acc);
   const creationDays = R.reduce(
     addDay,
     datesWithZeroAsValues,
     R.map(getCreationDay, issues)
   );
-  const removeDay = (datesWithValues, day) =>
-    R.assoc(getTime(day), creationDays[getTime(day)] - 1, datesWithValues);
+  const removeDay = (acc, day) =>
+    R.assoc(getTime(day), creationDays[getTime(day)] - 1, acc);
   const deltaDays = R.reduce(
     removeDay,
     creationDays,
@@ -43,7 +43,6 @@ export function cumulatedCount(issues, days) {
     result[getTime(day)] = cumulatedDelta;
   };
   R.forEach(addDeltaDay, days);
-
   return result;
 }
 
