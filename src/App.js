@@ -8,6 +8,7 @@ import { fetchIssues, fetchAllIssues, issuesUrl } from './github.js';
 import {
   buildSeriesDataFromDatesWithValues,
   countByCreationDay,
+  cumulatedCount,
   getAllDaysBetweenIssues,
 } from './series.js';
 import { getAllLabels, filterIssuesWithLabels } from './labels.js';
@@ -62,6 +63,8 @@ class App extends Component {
         {this.renderLabels()}
         <h2>New issues</h2>
         {this.renderOpenedIssues()}
+        <h2>Cumulated issues</h2>
+        {this.renderCumulatedIssues()}
       </div>
     );
   }
@@ -132,6 +135,12 @@ class App extends Component {
     });
   };
 
+  checkedRepositories() {
+    const isRepositoryChecked = repository =>
+      this.state.checkedRepositories.includes(repository);
+    return R.filter(isRepositoryChecked, repositories());
+  }
+
   renderOpenedIssues() {
     const xRange = getAllDaysBetweenIssues(this.allIssues());
     const buildNewIssuesSeries = issues =>
@@ -142,10 +151,20 @@ class App extends Component {
         )
       );
     const data = R.map(buildNewIssuesSeries, this.state.issues);
-    const isRepositoryChecked = repository =>
-      this.state.checkedRepositories.includes(repository);
-    const items = R.filter(isRepositoryChecked, repositories());
-    return <TimeChart data={data} items={items} />;
+    return <TimeChart data={data} items={this.checkedRepositories()} />;
+  }
+
+  renderCumulatedIssues() {
+    const xRange = getAllDaysBetweenIssues(this.allIssues());
+    const buildNewIssuesSeries = issues =>
+      buildSeriesDataFromDatesWithValues(
+        cumulatedCount(
+          filterIssuesWithLabels(issues, this.state.checkedLabels),
+          xRange
+        )
+      );
+    const data = R.map(buildNewIssuesSeries, this.state.issues);
+    return <TimeChart data={data} items={this.checkedRepositories()} />;
   }
 
   allIssues() {
