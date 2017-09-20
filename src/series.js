@@ -1,4 +1,4 @@
-import { startOfDay, getTime, parse, eachDay } from 'date-fns';
+import { startOfDay, addDays, getTime, parse, eachDay } from 'date-fns';
 import R from 'ramda';
 
 export function countByCreationDay(issues, days) {
@@ -14,6 +14,37 @@ export function countByCreationDay(issues, days) {
     R.map(getCreationDay, issues)
   );
   return datesWithValues;
+}
+
+export function cumulatedCount(issues, days) {
+  if (issues.length === 0) {
+    return {};
+  }
+  const datesWithZeroAsValues = getDatesWithZeroAsValues(days);
+  const addDay = (datesWithValues, day) =>
+    R.assoc(getTime(day), datesWithValues[getTime(day)] + 1, datesWithValues);
+  const creationDays = R.reduce(
+    addDay,
+    datesWithZeroAsValues,
+    R.map(getCreationDay, issues)
+  );
+  const removeDay = (datesWithValues, day) =>
+    R.assoc(getTime(day), creationDays[getTime(day)] - 1, datesWithValues);
+  const deltaDays = R.reduce(
+    removeDay,
+    creationDays,
+    R.map(getClosedDay, issues)
+  );
+
+  const result = datesWithZeroAsValues;
+  const addDeltaDay = day => {
+    const previousDay = getTime(addDays(day, -1));
+    const cumulatedDelta = (result[previousDay] || 0) + deltaDays[day];
+    result[day] = cumulatedDelta;
+  };
+  R.forEach(addDeltaDay, days);
+
+  return result;
 }
 
 export function getAllDaysBetweenIssues(issues) {
@@ -35,6 +66,10 @@ function getDatesWithZeroAsValues(days) {
 
 export function getCreationDay(issue) {
   return getTime(startOfDay(issue.created_at));
+}
+
+export function getClosedDay(issue) {
+  return getTime(startOfDay(issue.closed_at));
 }
 
 function parseIssueCreationDate(issue) {

@@ -1,15 +1,18 @@
 import {
   buildSeriesDataFromDatesWithValues,
   countByCreationDay,
+  cumulatedCount,
   getAllDaysBetweenIssues,
+  getClosedDay,
   getCreationDay,
 } from './series.js';
 
 import { startOfDay, getTime } from 'date-fns';
 
-function issue(createdAt) {
+function issue(createdAt, closedAt = null) {
   return {
     created_at: createdAt,
+    closed_at: closedAt,
   };
 }
 
@@ -18,9 +21,17 @@ function day(day) {
 }
 
 describe('getCreationDay', () => {
-  it('returns the creation day of an issue', () => {
+  it('returns the day an issue was created', () => {
     expect(getCreationDay(issue(day(22)))).toEqual(
       getTime(startOfDay(day(22)))
+    );
+  });
+});
+
+describe('getClosedDay', () => {
+  it('returns the day an issue was closed', () => {
+    expect(getClosedDay(issue(day(22), day(24)))).toEqual(
+      getTime(startOfDay(day(24)))
     );
   });
 });
@@ -74,5 +85,26 @@ describe('buildSeriesDataFromDatesWithValues', () => {
   });
   it('works with empty data', () => {
     expect(buildSeriesDataFromDatesWithValues({})).toEqual([]);
+  });
+});
+
+describe('cumulatedCount', () => {
+  it('works with no issues and no days', () => {
+    expect(cumulatedCount([], [])).toEqual({});
+  });
+  it('works with one issue', () => {
+    const issues = [issue(day(22), day(25)), issue(day(23), day(24))];
+    const firstDay = getTime(startOfDay(day(22)));
+    const secondDay = getTime(startOfDay(day(23)));
+    const thirdDay = getTime(startOfDay(day(24)));
+    const fourthDay = getTime(startOfDay(day(25)));
+    expect(
+      cumulatedCount(issues, [firstDay, secondDay, thirdDay, fourthDay])
+    ).toEqual({
+      [firstDay]: 1,
+      [secondDay]: 2,
+      [thirdDay]: 1,
+      [fourthDay]: 0,
+    });
   });
 });
