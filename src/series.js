@@ -39,8 +39,8 @@ export function cumulatedCount(issues, days) {
   const result = datesWithZeroAsValues;
   const addDeltaDay = day => {
     const previousDay = getTime(addDays(day, -1));
-    const cumulatedDelta = (result[previousDay] || 0) + deltaDays[day];
-    result[day] = cumulatedDelta;
+    const cumulatedDelta = (result[previousDay] || 0) + deltaDays[getTime(day)];
+    result[getTime(day)] = cumulatedDelta;
   };
   R.forEach(addDeltaDay, days);
 

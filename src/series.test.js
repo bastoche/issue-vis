@@ -83,6 +83,7 @@ describe('buildSeriesDataFromDatesWithValues', () => {
       { x: Number(secondDay), y: 1 },
     ]);
   });
+
   it('works with empty data', () => {
     expect(buildSeriesDataFromDatesWithValues({})).toEqual([]);
   });
@@ -92,19 +93,38 @@ describe('cumulatedCount', () => {
   it('works with no issues and no days', () => {
     expect(cumulatedCount([], [])).toEqual({});
   });
-  it('works with one issue', () => {
+
+  it('works with several issues', () => {
     const issues = [issue(day(22), day(25)), issue(day(23), day(24))];
-    const firstDay = getTime(startOfDay(day(22)));
-    const secondDay = getTime(startOfDay(day(23)));
-    const thirdDay = getTime(startOfDay(day(24)));
-    const fourthDay = getTime(startOfDay(day(25)));
     expect(
-      cumulatedCount(issues, [firstDay, secondDay, thirdDay, fourthDay])
+      cumulatedCount(issues, [
+        startOfDay(day(22)),
+        startOfDay(day(23)),
+        startOfDay(day(24)),
+        startOfDay(day(25)),
+      ])
     ).toEqual({
-      [firstDay]: 1,
-      [secondDay]: 2,
-      [thirdDay]: 1,
-      [fourthDay]: 0,
+      [getTime(startOfDay(day(22)))]: 1,
+      [getTime(startOfDay(day(23)))]: 2,
+      [getTime(startOfDay(day(24)))]: 1,
+      [getTime(startOfDay(day(25)))]: 0,
+    });
+  });
+
+  it('works with unclosed issues', () => {
+    const issues = [issue(day(22), day(25)), issue(day(23))];
+    expect(
+      cumulatedCount(issues, [
+        startOfDay(day(22)),
+        startOfDay(day(23)),
+        startOfDay(day(24)),
+        startOfDay(day(25)),
+      ])
+    ).toEqual({
+      [getTime(startOfDay(day(22)))]: 1,
+      [getTime(startOfDay(day(23)))]: 2,
+      [getTime(startOfDay(day(24)))]: 2,
+      [getTime(startOfDay(day(25)))]: 1,
     });
   });
 });
