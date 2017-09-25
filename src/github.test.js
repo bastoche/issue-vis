@@ -47,7 +47,7 @@ describe('fetchAllIssues', () => {
 describe('issuesUrl', () => {
   it('returns the url of the github api for issues of the specified repository', () => {
     expect(issuesUrl('my_repository')).toEqual(
-      'https://api.github.com/repos/my_repository/issues'
+      'https://api.github.com/repos/my_repository/issues?state=all'
     );
   });
 });
