@@ -38,5 +38,5 @@ export function getNextPage(linkHeader) {
 }
 
 export function issuesUrl(repository) {
-  return `https://api.github.com/repos/${repository}/issues?state=all`;
+  return `https://api.github.com/repos/${repository}/issues?state=all&since=2017-08-01T00:00:00Z`;
 }
