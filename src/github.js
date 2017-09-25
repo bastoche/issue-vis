@@ -38,5 +38,5 @@ export function getNextPage(linkHeader) {
 }
 
 export function issuesUrl(repository) {
-  return `https://api.github.com/repos/${repository}/issues`;
+  return `https://api.github.com/repos/${repository}/issues?state=all`;
 }
