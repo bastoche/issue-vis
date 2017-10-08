@@ -36,14 +36,13 @@ export function cumulatedCount(issues, days) {
     R.map(getClosedDay, issues)
   );
 
-  const result = datesWithZeroAsValues;
-  const addDeltaDay = day => {
+  const computeCumulatedDelta = (acc, day) => {
     const previousDay = getTime(addDays(day, -1));
-    const cumulatedDelta = (result[previousDay] || 0) + deltaDays[getTime(day)];
-    result[getTime(day)] = cumulatedDelta;
+    const previousCumulatedDelta = acc[previousDay] || 0;
+    const cumulatedDelta = previousCumulatedDelta + deltaDays[getTime(day)];
+    return R.assoc(getTime(day), cumulatedDelta, acc);
   };
-  R.forEach(addDeltaDay, days);
-  return result;
+  return R.reduce(computeCumulatedDelta, {}, days);
 }
 
 export function getAllDaysBetweenIssues(issues) {
