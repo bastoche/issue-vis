@@ -152,15 +152,12 @@ class App extends Component {
 
   renderOpenedIssues() {
     const xRange = getAllDaysBetweenIssues(this.allIssues());
-    const buildNewIssuesSeries = issues =>
-      buildSeriesDataFromDatesWithValues(
-        countByCreationDay(
-          filterIssuesWithLabels(issues, this.state.checkedLabels),
-          xRange
-        )
+    const buildCountByCreationDay = issues =>
+      countByCreationDay(
+        filterIssuesWithLabels(issues, this.state.checkedLabels),
+        xRange
       );
-    const data = R.map(buildNewIssuesSeries, this.state.issues);
-    return <TimeChart data={data} items={this.checkedRepositories()} />;
+    return this.renderIssues(buildCountByCreationDay, xRange);
   }
 
   renderCumulatedIssues() {
@@ -170,13 +167,14 @@ class App extends Component {
         filterIssuesWithLabels(issues, this.state.checkedLabels),
         xRange
       );
-    const cumulatedCountByRepository = R.map(
-      buildCumulatedCount,
-      this.state.issues
-    );
+    return this.renderIssues(buildCumulatedCount, xRange);
+  }
+
+  renderIssues(issuesBuilder, xRange) {
+    const issuesByRepository = R.map(issuesBuilder, this.state.issues);
     const chartData = R.map(
-      cumulatedCount => buildSeriesDataFromDatesWithValues(cumulatedCount),
-      cumulatedCountByRepository
+      issues => buildSeriesDataFromDatesWithValues(issues),
+      issuesByRepository
     );
     const repositories = this.checkedRepositories();
 
@@ -184,14 +182,13 @@ class App extends Component {
     const rows = xRange.map(day => {
       const time = getTime(day);
       const total = R.reduce(
-        (acc, repository) =>
-          acc + (cumulatedCountByRepository[repository][time] || 0),
+        (acc, repository) => acc + (issuesByRepository[repository][time] || 0),
         0,
         repositories
       );
       return [format(day, 'MM/DD/YYYY'), total].concat(
         repositories.map(
-          repository => cumulatedCountByRepository[repository][time] || 0
+          repository => issuesByRepository[repository][time] || 0
         )
       );
     });
