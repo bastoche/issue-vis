@@ -95,7 +95,11 @@ describe('cumulatedCount', () => {
   });
 
   it('works with several issues', () => {
-    const issues = [issue(day(22), day(25)), issue(day(23), day(24))];
+    const issues = [
+      issue(day(22), day(24)),
+      issue(day(23), day(24)),
+      issue(day(24)),
+    ];
     expect(
       cumulatedCount(issues, [
         startOfDay(day(22)),
@@ -107,7 +111,7 @@ describe('cumulatedCount', () => {
       [getTime(startOfDay(day(22)))]: 1,
       [getTime(startOfDay(day(23)))]: 2,
       [getTime(startOfDay(day(24)))]: 1,
-      [getTime(startOfDay(day(25)))]: 0,
+      [getTime(startOfDay(day(25)))]: 1,
     });
   });
 

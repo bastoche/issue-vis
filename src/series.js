@@ -29,7 +29,7 @@ export function cumulatedCount(issues, days) {
     R.map(getCreationDay, issues)
   );
   const removeDay = (acc, day) =>
-    R.assoc(getTime(day), creationDays[getTime(day)] - 1, acc);
+    R.assoc(getTime(day), acc[getTime(day)] - 1, acc);
   const deltaDays = R.reduce(
     removeDay,
     creationDays,
