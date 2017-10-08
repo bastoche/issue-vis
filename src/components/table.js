@@ -20,24 +20,27 @@ export class Table extends Component {
           </tr>
         </thead>
         <tbody>
-          {this.props.days.map(day => (
-            <tr key={day}>
-              <td>{format(day, 'MM/DD/YYYY')}</td>
-              <td>
-                {R.reduce(
-                  (acc, repo) =>
-                    acc + (cumulatedCountByRepository[repo][getTime(day)] || 0),
-                  0,
-                  repositories
-                )}
-              </td>
-              {repositories.map(repository => (
-                <td key={repository + day}>
-                  {cumulatedCountByRepository[repository][getTime(day)] || 0}
+          {this.props.days.map(day => {
+            const time = getTime(day);
+            return (
+              <tr key={day}>
+                <td>{format(day, 'MM/DD/YYYY')}</td>
+                <td>
+                  {R.reduce(
+                    (acc, repo) =>
+                      acc + (cumulatedCountByRepository[repo][time] || 0),
+                    0,
+                    repositories
+                  )}
                 </td>
-              ))}
-            </tr>
-          ))}
+                {repositories.map(repository => (
+                  <td key={repository + day}>
+                    {cumulatedCountByRepository[repository][time] || 0}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     );
