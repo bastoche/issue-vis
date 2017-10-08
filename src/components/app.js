@@ -58,10 +58,10 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <h1>issue-vis</h1>
-        <h2>Data sources</h2>
+        <h1 className="no-print">issue-vis</h1>
+        <h2 className="no-print">Data sources</h2>
         {this.renderRepositories()}
-        <h3>Labels</h3>
+        <h3 className="no-print">Labels</h3>
         {this.renderLabels()}
         <h2>New issues</h2>
         {this.renderOpenedIssues()}
@@ -72,14 +72,18 @@ class App extends Component {
   }
 
   renderRepositories() {
-    return repositories().map(repository => (
-      <Checkbox
-        label={repository}
-        key={repository}
-        checked={this.state.checkedRepositories.includes(repository)}
-        onCheckboxChanged={this.handleRepositoryCheckboxChanged}
-      />
-    ));
+    return (
+      <div className="no-print">
+        {repositories().map(repository => (
+          <Checkbox
+            label={repository}
+            key={repository}
+            checked={this.state.checkedRepositories.includes(repository)}
+            onCheckboxChanged={this.handleRepositoryCheckboxChanged}
+          />
+        ))}
+      </div>
+    );
   }
 
   handleRepositoryCheckboxChanged = repository => {
@@ -103,9 +107,12 @@ class App extends Component {
     const issues = this.allIssues();
     if (issues) {
       const labels = getAllLabels(issues);
-      const style = { columnCount: 2, columnWidth: '50%' };
+      const style = {
+        columnCount: 2,
+        columnWidth: '50%',
+      };
       return (
-        <div style={style}>
+        <div style={style} className="no-print">
           {labels.map(label => (
             <Checkbox
               label={label}
@@ -192,7 +199,9 @@ class App extends Component {
     return (
       <div>
         <TimeChart data={chartData} items={repositories} />
-        <Table headers={headers} rows={rows} />
+        <div className="no-print">
+          <Table headers={headers} rows={rows} />
+        </div>
       </div>
     );
   }

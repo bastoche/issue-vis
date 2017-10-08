@@ -2,3 +2,9 @@
   max-width: 980px;
   margin: auto;
 }
+
+@media print {
+  .no-print {
+    display: none;
+  }
+}
