@@ -1,54 +1,30 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import R from 'ramda';
-import { format, getTime } from 'date-fns';
-
 export class Table extends Component {
   render() {
-    const repositories = this.props.repositories;
-    const cumulatedCountByRepository = this.props.cumulatedCountByRepository;
+    /* eslint-disable react/no-array-index-key */
     return (
       <table>
         <thead>
           <tr>
-            <th>Day</th>
-            <th>Total</th>
-            {repositories.map(repository => (
-              <th key={repository}>{repository}</th>
-            ))}
+            {this.props.headers.map(header => <th key={header}>{header}</th>)}
           </tr>
         </thead>
         <tbody>
-          {this.props.days.map(day => {
-            const time = getTime(day);
-            return (
-              <tr key={day}>
-                <td>{format(day, 'MM/DD/YYYY')}</td>
-                <td>
-                  {R.reduce(
-                    (acc, repo) =>
-                      acc + (cumulatedCountByRepository[repo][time] || 0),
-                    0,
-                    repositories
-                  )}
-                </td>
-                {repositories.map(repository => (
-                  <td key={repository + day}>
-                    {cumulatedCountByRepository[repository][time] || 0}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
+          {this.props.rows.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}
+            </tr>
+          ))}
         </tbody>
       </table>
     );
+    /* eslint-enable react/no-array-index-key */
   }
 }
 
 Table.propTypes = {
-  cumulatedCountByRepository: PropTypes.object.isRequired,
-  days: PropTypes.array.isRequired,
-  repositories: PropTypes.array.isRequired,
+  headers: PropTypes.array.isRequired,
+  rows: PropTypes.array.isRequired,
 };

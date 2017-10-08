@@ -3,6 +3,7 @@ import '../../node_modules/react-vis/dist/style.css';
 
 import React, { Component } from 'react';
 import R from 'ramda';
+import { format, getTime } from 'date-fns';
 
 import { fetchIssues, fetchAllIssues, issuesUrl } from '../github/issues.js';
 import {
@@ -172,14 +173,26 @@ class App extends Component {
     );
     const repositories = this.checkedRepositories();
 
+    const headers = ['Day', 'Total'].concat(repositories);
+    const rows = xRange.map(day => {
+      const time = getTime(day);
+      const total = R.reduce(
+        (acc, repository) =>
+          acc + (cumulatedCountByRepository[repository][time] || 0),
+        0,
+        repositories
+      );
+      return [format(day, 'MM/DD/YYYY'), total].concat(
+        repositories.map(
+          repository => cumulatedCountByRepository[repository][time] || 0
+        )
+      );
+    });
+
     return (
       <div>
         <TimeChart data={chartData} items={repositories} />
-        <Table
-          days={xRange}
-          repositories={repositories}
-          cumulatedCountByRepository={cumulatedCountByRepository}
-        />
+        <Table headers={headers} rows={rows} />
       </div>
     );
   }
