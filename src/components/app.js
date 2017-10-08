@@ -1,17 +1,17 @@
-import './App.css';
-import '../node_modules/react-vis/dist/style.css';
+import './app.css';
+import '../../node_modules/react-vis/dist/style.css';
 
 import React, { Component } from 'react';
 import R from 'ramda';
 
-import { fetchIssues, fetchAllIssues, issuesUrl } from './github.js';
+import { fetchIssues, fetchAllIssues, issuesUrl } from '../github/issues.js';
 import {
   buildSeriesDataFromDatesWithValues,
   countByCreationDay,
   cumulatedCount,
   getAllDaysBetweenIssues,
-} from './series.js';
-import { getAllLabels, filterIssuesWithLabels } from './labels.js';
+} from '../github/series.js';
+import { getAllLabels, filterIssuesWithLabels } from '../github/labels.js';
 import { TimeChart } from './timechart.js';
 import { Checkbox } from './checkbox.js';
 

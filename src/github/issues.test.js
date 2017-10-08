@@ -1,4 +1,4 @@
-import { getNextPage, fetchAllIssues, issuesUrl } from './github.js';
+import { getNextPage, fetchAllIssues, issuesUrl } from './issues.js';
 
 describe('getNextPage', () => {
   it('returns the next page from a link header if it exists', () => {
