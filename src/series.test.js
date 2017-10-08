@@ -94,41 +94,61 @@ describe('cumulatedCount', () => {
     expect(cumulatedCount([], [])).toEqual({});
   });
 
-  it('works with several issues', () => {
-    const issues = [
-      issue(day(22), day(24)),
-      issue(day(23), day(24)),
-      issue(day(24)),
-    ];
+  it('works with one issue', () => {
+    expect(
+      cumulatedCount(
+        [issue(day(22), day(24))],
+        [startOfDay(day(22)), startOfDay(day(23)), startOfDay(day(24))]
+      )
+    ).toEqual({
+      [getTime(startOfDay(day(22)))]: 1,
+      [getTime(startOfDay(day(23)))]: 1,
+      [getTime(startOfDay(day(24)))]: 0,
+    });
+  });
+
+  it('works with several issues opened the same day', () => {
+    const issues = [issue(day(22), day(23)), issue(day(22), day(24))];
     expect(
       cumulatedCount(issues, [
         startOfDay(day(22)),
         startOfDay(day(23)),
         startOfDay(day(24)),
-        startOfDay(day(25)),
+      ])
+    ).toEqual({
+      [getTime(startOfDay(day(22)))]: 2,
+      [getTime(startOfDay(day(23)))]: 1,
+      [getTime(startOfDay(day(24)))]: 0,
+    });
+  });
+
+  it('works with several issues closed the same day', () => {
+    const issues = [issue(day(22), day(24)), issue(day(23), day(24))];
+    expect(
+      cumulatedCount(issues, [
+        startOfDay(day(22)),
+        startOfDay(day(23)),
+        startOfDay(day(24)),
+      ])
+    ).toEqual({
+      [getTime(startOfDay(day(22)))]: 1,
+      [getTime(startOfDay(day(23)))]: 2,
+      [getTime(startOfDay(day(24)))]: 0,
+    });
+  });
+
+  it('works with unclosed issues', () => {
+    const issues = [issue(day(22), day(24)), issue(day(23))];
+    expect(
+      cumulatedCount(issues, [
+        startOfDay(day(22)),
+        startOfDay(day(23)),
+        startOfDay(day(24)),
       ])
     ).toEqual({
       [getTime(startOfDay(day(22)))]: 1,
       [getTime(startOfDay(day(23)))]: 2,
       [getTime(startOfDay(day(24)))]: 1,
-      [getTime(startOfDay(day(25)))]: 1,
-    });
-  });
-
-  it('works with unclosed issues', () => {
-    const issues = [issue(day(22), day(25)), issue(day(23))];
-    expect(
-      cumulatedCount(issues, [
-        startOfDay(day(22)),
-        startOfDay(day(23)),
-        startOfDay(day(24)),
-        startOfDay(day(25)),
-      ])
-    ).toEqual({
-      [getTime(startOfDay(day(22)))]: 1,
-      [getTime(startOfDay(day(23)))]: 2,
-      [getTime(startOfDay(day(24)))]: 2,
-      [getTime(startOfDay(day(25)))]: 1,
     });
   });
 });
