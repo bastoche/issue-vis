@@ -3,7 +3,6 @@ import '../../node_modules/react-vis/dist/style.css';
 
 import React, { Component } from 'react';
 import R from 'ramda';
-import { format, getTime } from 'date-fns';
 
 import { fetchIssues, fetchAllIssues, issuesUrl } from '../github/issues.js';
 import {
@@ -14,6 +13,7 @@ import {
 } from '../github/series.js';
 import { getAllLabels, filterIssuesWithLabels } from '../github/labels.js';
 import { TimeChart } from './timechart.js';
+import { Table } from './table.js';
 import { Checkbox } from './checkbox.js';
 
 function repositories() {
@@ -175,28 +175,11 @@ class App extends Component {
     return (
       <div>
         <TimeChart data={chartData} items={repositories} />
-        <table>
-          <thead>
-            <tr>
-              <th>Day</th>
-              {repositories.map(repository => (
-                <th key={repository}>{repository}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {xRange.map(day => (
-              <tr key={day}>
-                <td>{format(day, 'MM/DD/YYYY')}</td>
-                {repositories.map(repository => (
-                  <td key={repository + day}>
-                    {cumulatedCountByRepository[repository][getTime(day)] || 0}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Table
+          days={xRange}
+          repositories={repositories}
+          cumulatedCountByRepository={cumulatedCountByRepository}
+        />
       </div>
     );
   }
