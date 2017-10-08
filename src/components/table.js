@@ -48,7 +48,7 @@ export class Table extends Component {
 }
 
 Table.propTypes = {
-  repositories: PropTypes.array.isRequired,
-  days: PropTypes.array.isRequired,
   cumulatedCountByRepository: PropTypes.object.isRequired,
+  days: PropTypes.array.isRequired,
+  repositories: PropTypes.array.isRequired,
 };
