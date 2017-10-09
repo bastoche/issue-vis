@@ -3,6 +3,10 @@
   margin: auto;
 }
 
+.pagebreak {
+  page-break-before: always;
+}
+
 table {
   border-collapse: collapse;
 }

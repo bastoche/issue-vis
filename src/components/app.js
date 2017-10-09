@@ -65,6 +65,7 @@ class App extends Component {
         {this.renderLabels()}
         <h2>New issues</h2>
         {this.renderOpenedIssues()}
+        <div className="pagebreak" />
         <h2>Cumulated issues</h2>
         {this.renderCumulatedIssues()}
       </div>
