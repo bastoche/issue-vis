@@ -24,7 +24,13 @@ function repositories() {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { issues: {}, checkedLabels: [], checkedRepositories: [] };
+    this.state = {
+      issues: {},
+      checkedLabels: [],
+      checkedRepositories: [],
+      startDay: 0,
+    };
+    this.handleStartDaySelected = this.handleStartDaySelected.bind(this);
   }
 
   componentWillMount() {
@@ -44,12 +50,16 @@ class App extends Component {
       this.setState((prevState, props) => {
         const prevIssues = prevState.issues[key];
         const totalIssues = prevIssues ? prevIssues.concat(issues) : issues;
+        const newIssues = {
+          ...prevState.issues,
+          [key]: totalIssues,
+        };
         return {
           ...prevState,
-          issues: {
-            ...prevState.issues,
-            [key]: totalIssues,
-          },
+          issues: newIssues,
+          startDay: getTime(
+            getAllDaysBetweenIssues(R.flatten(R.values(newIssues)))[0]
+          ),
         };
       });
     };
@@ -63,6 +73,8 @@ class App extends Component {
         {this.renderRepositories()}
         <h3 className="no-print">Labels</h3>
         {this.renderLabels()}
+        <h3 className="no-print">Start time</h3>
+        {this.renderTimePicker()}
         <h2>New issues</h2>
         {this.renderOpenedIssues()}
         <div className="pagebreak" />
@@ -145,6 +157,40 @@ class App extends Component {
     });
   };
 
+  renderTimePicker() {
+    const days = getAllDaysBetweenIssues(this.allIssues());
+    if (days) {
+      return (
+        <div className="no-print">
+          <select
+            value={this.state.startDay}
+            onChange={this.handleStartDaySelected}
+          >
+            {days.map(day => {
+              const time = getTime(day);
+              return (
+                <option key={time} value={time}>
+                  {format(day, 'MM/DD/YYYY')}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+      );
+    }
+    return 'Fetching...';
+  }
+
+  handleStartDaySelected(event) {
+    const value = event.target.value;
+    this.setState((prevState, props) => {
+      return {
+        ...prevState,
+        startDay: value,
+      };
+    });
+  }
+
   checkedRepositories() {
     const isRepositoryChecked = repository =>
       this.state.checkedRepositories.includes(repository);
@@ -152,7 +198,10 @@ class App extends Component {
   }
 
   renderOpenedIssues() {
-    const xRange = getAllDaysBetweenIssues(this.allIssues());
+    const xRange = getAllDaysBetweenIssues(this.allIssues()).filter(
+      day => getTime(day) >= this.state.startDay
+    );
+
     const buildCountByCreationDay = issues =>
       countByCreationDay(
         filterIssuesWithLabels(issues, this.state.checkedLabels),
@@ -162,7 +211,9 @@ class App extends Component {
   }
 
   renderCumulatedIssues() {
-    const xRange = getAllDaysBetweenIssues(this.allIssues());
+    const xRange = getAllDaysBetweenIssues(this.allIssues()).filter(
+      day => getTime(day) >= this.state.startDay
+    );
     const buildCumulatedCount = issues =>
       cumulatedCount(
         filterIssuesWithLabels(issues, this.state.checkedLabels),
