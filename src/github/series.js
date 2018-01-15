@@ -62,6 +62,12 @@ function getDatesWithZeroAsValues(days) {
   return R.reduce(addZero, {}, days);
 }
 
+export function wasCreatedAfter(date) {
+  return issue => {
+    return getCreationDay(issue) >= date;
+  };
+}
+
 export function getCreationDay(issue) {
   return getTime(startOfDay(issue.created_at));
 }

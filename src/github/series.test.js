@@ -5,6 +5,7 @@ import {
   getAllDaysBetweenIssues,
   getClosedDay,
   getCreationDay,
+  wasCreatedAfter,
 } from './series.js';
 
 import { startOfDay, getTime } from 'date-fns';
@@ -33,6 +34,16 @@ describe('getClosedDay', () => {
     expect(getClosedDay(issue(day(22), day(24)))).toEqual(
       getTime(startOfDay(day(24)))
     );
+  });
+});
+
+describe('wasCreatedAfter', () => {
+  it('returns true if the issue was created after the specified date', () => {
+    expect(wasCreatedAfter(getTime(day(21)))(issue(day(22)))).toEqual(true);
+  });
+
+  it('returns false if the issue was created before the specified date', () => {
+    expect(wasCreatedAfter(getTime(day(23)))(issue(day(22)))).toEqual(false);
   });
 });
 

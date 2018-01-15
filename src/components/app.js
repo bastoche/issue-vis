@@ -11,6 +11,7 @@ import {
   countByCreationDay,
   cumulatedCount,
   getAllDaysBetweenIssues,
+  wasCreatedAfter,
 } from '../github/series.js';
 import { getAllLabels, filterIssuesWithLabels } from '../github/labels.js';
 import { TimeChart } from './timechart.js';
@@ -197,16 +198,25 @@ class App extends Component {
     return R.filter(isRepositoryChecked, repositories());
   }
 
+  filterIssues(issues) {
+    const issuesInRange = R.filter(
+      wasCreatedAfter(this.state.startDay),
+      issues
+    );
+    const issuesInRangeWithLabels = filterIssuesWithLabels(
+      issuesInRange,
+      this.state.checkedLabels
+    );
+    return issuesInRangeWithLabels;
+  }
+
   renderOpenedIssues() {
     const xRange = getAllDaysBetweenIssues(this.allIssues()).filter(
       day => getTime(day) >= this.state.startDay
     );
-
-    const buildCountByCreationDay = issues =>
-      countByCreationDay(
-        filterIssuesWithLabels(issues, this.state.checkedLabels),
-        xRange
-      );
+    const buildCountByCreationDay = issues => {
+      return countByCreationDay(this.filterIssues(issues), xRange);
+    };
     return this.renderIssues(buildCountByCreationDay, xRange);
   }
 
@@ -214,11 +224,9 @@ class App extends Component {
     const xRange = getAllDaysBetweenIssues(this.allIssues()).filter(
       day => getTime(day) >= this.state.startDay
     );
-    const buildCumulatedCount = issues =>
-      cumulatedCount(
-        filterIssuesWithLabels(issues, this.state.checkedLabels),
-        xRange
-      );
+    const buildCumulatedCount = issues => {
+      return cumulatedCount(this.filterIssues(issues), xRange);
+    };
     return this.renderIssues(buildCumulatedCount, xRange);
   }
 
@@ -228,6 +236,7 @@ class App extends Component {
       issues => buildSeriesDataFromDatesWithValues(issues),
       issuesByRepository
     );
+
     const repositories = this.checkedRepositories();
 
     const headers = ['Day', 'Total'].concat(repositories);
